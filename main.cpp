@@ -4,7 +4,7 @@
 #ifdef _WIN32
 #include "raylib/src/raylib.h"
 #elif __linux__
-#include "raylib.h"
+#include"raylib.h"
 #endif
 
 #define WINDOW_WIDTH 800
@@ -17,7 +17,7 @@
 #define MAX_DECKS_COLUMNS 6
 #define MIN_CARDS_IN_DECK 4
 enum States{
-    MENU,GAME,DECKSCREEN
+    MENU,GAME,DECKSCREEN, DECKCREATINGSCREEN
 };
 States gameState = MENU;
 bool isDeckLoop = false;
@@ -69,6 +69,8 @@ public:
     void RemoveX(float element) { target.x -= element;};
     void AddY(float element) { target.y += element;};
     void RemoveY(float element) {target.y -= element;};
+    void AddZoom(float element){zoom += element;};
+    void RemoveZoom(float element){zoom -= element;};
 };
 class menuPrincipal {
 private:
@@ -87,19 +89,33 @@ public:
         DrawText("Otro", 287, 40, 30,BLACK);
 
     }
-
+    /*Listening to menu*/
     void Listener()
     {
+            /*Check if "Deck" button was pressed*/
             if (CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), Decks)
             && IsMouseButtonPressed(0)) {  
+                /*Set the gameState DeckScreen*/
                 gameState = DECKSCREEN;
-                isDeckLoop=true;              
+                isDeckLoop=true;
             }
+            /*Check if "Play" button was pressed*/
             if (CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), play)
             && IsMouseButtonPressed(0)) {
+                /*Set the gameState Game*/
                 gameState = GAME;
             }
     };
+};
+
+class CreatingDeckMenu{
+private:
+    
+public:
+    void Draw(){
+        DrawLine(0, 100, 1800, 100, WHITE);
+        DrawLine(300, 100, 300, 1800, WHITE);
+    }
 };
 
 class deck {
@@ -107,7 +123,7 @@ public:
     std::string Name;
     std::vector<Card> deck;
     int DeckId;
-    void SetDeck(std::string DeckName, std::vector<Card> DeckCards, long double Id){
+    void SetDeck(std::string DeckName, std::vector<Card> DeckCards, int Id){
         deck = DeckCards;
         DeckId = Id;
     }
@@ -122,12 +138,19 @@ class deckscreen {
 private:
     /* Create the button rectangles */
     Rectangle FinalizeButton = {500, 500, 140, 40};
-    Rectangle CreateButton = {790, 60, 100, 60};
+    Rectangle CreateButton = {790, 260, 100, 60};
 public:
     void Draw()
     {
+        if(gameState==DECKSCREEN)
+        {
         DrawText("+", CreateButton.x, CreateButton.y, 50, WHITE);
-        if (ChosingDeck) {
+        }
+        if(gameState==DECKCREATINGSCREEN){
+        CreateButton.x = 1500;
+        DrawText("-", CreateButton.x, CreateButton.y, 90, WHITE);
+        }
+        if (ChosingDeck && gameState == DECKSCREEN) {
             /* Draw text to finalize the deck */
             DrawText("Finalize", 500, 500, 30, GRAY);
         }
@@ -136,7 +159,19 @@ public:
     {
         if (CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), CreateButton)
         && IsMouseButtonPressed(0)) {
+            if(ChosingDeck){
+                ChosingDeck=false;
+            }
             ChosingDeck = true;
+            switch(gameState){
+                case DECKSCREEN:
+                gameState=DECKCREATINGSCREEN;
+                break;
+                case DECKCREATINGSCREEN:
+                AddToDeck.clear();
+                gameState=DECKSCREEN;
+                break;
+            }
         }
 
         /* Check if button to create deck was pressed */
@@ -200,7 +235,6 @@ int main(void) {
     Camera.SetZoom(1.0f);
     camera.target = (Vector2) {Camera.GetXTarget(), Camera.GetYTarget()};
     camera.rotation = Camera.GetRotation();
-    camera.zoom = Camera.GetZoom();
 
     /* Cards */
     auto Lion = Card("Lion", 0, 32, 32, "card.png");
@@ -220,6 +254,8 @@ int main(void) {
     deck Deck;
     button Button;
     deckscreen DeckScreen;
+    CreatingDeckMenu CDM;
+
     /* Texture Declaration */
     std::vector<Texture2D> CardList;
     for (size_t i = 0; i < Cards.size(); ++i) {
@@ -227,6 +263,7 @@ int main(void) {
         ImageResize(&thisCarde, 150, 150);
         Texture2D thisCard = LoadTextureFromImage(thisCarde);
         CardList.push_back(thisCard);
+        UnloadImage(thisCarde);
     }
 
     Image BkScreen = LoadImage("biosystem-tcg.png");
@@ -240,25 +277,33 @@ int main(void) {
                 DrawFPS(600,40);
 
                 /* Decks listener */
-                /* Update Camera */
+                /* Updating Camera */
                 camera.target = (Vector2) {Camera.GetXTarget(), Camera.GetYTarget()};
                 Camera.AddY(GetMouseWheelMove() * 100);
+                camera.zoom = Camera.GetZoom();
+
 
                 switch(gameState){
+                    case DECKCREATINGSCREEN:
+                        CDM.Draw();
+                        Camera.SetZoom(0.5);
                     case DECKSCREEN: 
                     DeckScreen.Draw(); 
                     Button.Listener(); 
-                    DeckScreen.Listener(); 
+                    DeckScreen.Listener();
+                    Camera.SetZoom(1.0);
                     break;
 
                     case MENU: 
                     DrawTexture(BackScreen, 0, 0, WHITE); 
                     Menu.Draw(); 
-                    Menu.Listener(); 
+                    Menu.Listener();
+                    Camera.SetZoom(1.0);
                     break;
                 
                     case GAME: 
                     Game.Draw(); 
+                    Camera.SetZoom(1.0);
                     break;
 
                     default:
