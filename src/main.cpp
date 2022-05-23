@@ -16,10 +16,10 @@
 #define MAX_DECKS_ROWS 1
 #define MAX_DECKS_COLUMNS 6
 #define MIN_CARDS_IN_DECK 4
-
-bool InMenu = true;
-bool InGame = false;
-bool InDecks = false;
+enum States{
+    MENU,GAME,DECKSCREEN
+};
+States gameState = MENU;
 bool isDeckLoop = false;
 bool ChosingDeck = false;
 Camera2D camera;
@@ -91,17 +91,13 @@ public:
     void Listener()
     {
             if (CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), Decks)
-            && IsMouseButtonPressed(0)) {
-                    InDecks = true;
-                    isDeckLoop=true;
-                    InMenu=false;
-                    InGame=false;
+            && IsMouseButtonPressed(0)) {  
+                gameState = DECKSCREEN;
+                isDeckLoop=true;              
             }
             if (CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), play)
             && IsMouseButtonPressed(0)) {
-                InGame = true;
-                InMenu = false;
-                InDecks = false;
+                gameState = GAME;
             }
     };
 };
@@ -247,31 +243,34 @@ int main(void)
                 DrawFPS(600,40);
 
                 /* Decks listener */
-                if (InDecks) { Button.Listener(); DeckScreen.Listener(); }
                 /* Update Camera */
                 camera.target = Vector2 {Camera.GetXTarget(), Camera.GetYTarget()};
                 Camera.AddY(GetMouseWheelMove() * 100);
 
-                /* Drawing DeckScreen */
-                if (InDecks)
-                    DeckScreen.Draw();
+                switch(gameState){
+                    case DECKSCREEN: 
+                    DeckScreen.Draw(); 
+                    Button.Listener(); 
+                    DeckScreen.Listener(); 
+                    break;
 
-                /* Drawing Menu */
-                if (InMenu) {
-                    DrawTexture(BackScreen, 0, 0, WHITE);
-                    Menu.Draw();
+                    case MENU: 
+                    DrawTexture(BackScreen, 0, 0, WHITE); 
+                    Menu.Draw(); 
+                    Menu.Listener(); 
+                    break;
+                
+                    case GAME: 
+                    Game.Draw(); 
+                    break;
+
+                    default:
+                        printf("Unable to get current state");
+                        break;
                 }
 
-                /* Listening to menu */
-                if (InMenu)
-                    Menu.Listener();
-
-                /* Drawing Game */
-                if (InGame)
-                    Game.Draw();
-
                 /* Drawing Decks Menu cards */
-                if (InDecks) {
+                if (gameState == DECKSCREEN) {
                     if (isDeckLoop) {
                         for (size_t l = 0; l < MAX_CARDS_ROWS; ++l) {
                             for (size_t c = 0; c < MAX_CARDS_COLUMNS; ++c) {
