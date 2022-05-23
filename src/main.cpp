@@ -22,7 +22,7 @@ bool InGame = false;
 bool InDecks = false;
 bool isDeckLoop = false;
 bool ChosingDeck = false;
-Camera2D camera = {0};
+Camera2D camera;
 
 class Card {
 public:
@@ -32,8 +32,8 @@ public:
     int Id;
     Card(std::string name, int Id, int atk1, int atk2, std::string fileNameFunc)
     {
-        name = name;
-        Id = Id;
+        this->name = name;
+        this->Id = Id;
         Attacks.push_back(atk1);
         Attacks.push_back(atk2);
         fileName = fileNameFunc;
@@ -111,7 +111,9 @@ public:
     std::string Name;
     std::vector<Card> deck;
     int DeckId;
-    void SetDeck(std::string DeckName, std::vector<Card> DeckCards, long double Id){
+    void SetDeck(std::string DeckName, std::vector<Card> DeckCards, long double Id)
+    {
+        (void) DeckName; /* Disable Warning */
         deck = DeckCards;
         DeckId = Id;
     }
@@ -192,7 +194,8 @@ public:
     }
 };
 
-int main(void) {
+int main(void)
+{
     /* Initialize Window */
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
 
@@ -202,7 +205,7 @@ int main(void) {
     Camera.SetYTarget(20.0f);
     Camera.SetRotation(0.0f);
     Camera.SetZoom(1.0f);
-    camera.target = (Vector2) {Camera.GetXTarget(), Camera.GetYTarget()};
+    camera.target = Vector2 {Camera.GetXTarget(), Camera.GetYTarget()};
     camera.rotation = Camera.GetRotation();
     camera.zoom = Camera.GetZoom();
 
@@ -246,7 +249,7 @@ int main(void) {
                 /* Decks listener */
                 if (InDecks) { Button.Listener(); DeckScreen.Listener(); }
                 /* Update Camera */
-                camera.target = (Vector2) {Camera.GetXTarget(), Camera.GetYTarget()};
+                camera.target = Vector2 {Camera.GetXTarget(), Camera.GetYTarget()};
                 Camera.AddY(GetMouseWheelMove() * 100);
 
                 /* Drawing DeckScreen */
@@ -291,4 +294,6 @@ int main(void) {
             EndMode2D();
         EndDrawing();
     }
+
+    return 0; /* Everything is OK, so return 0 */
 }
