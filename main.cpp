@@ -1,20 +1,40 @@
 #include <iostream>
 #include"raylib/src/raylib.h"
-#include"raygui/src/raygui.h"
 #include<vector>
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 #define WINDOW_TITLE "Development"
 #define CARDS_NUMBER 10
-#define MAX_ROWS 1
-#define MAX_COLUMNS 2
+#define MAX_CARDS_ROWS 1
+#define MAX_CARDS_COLUMNS 5
+#define MAX_DECKS_ROWS 1
+#define MAX_DECKS_COLUMNS 6
+#define MIN_CARDS_IN_DECK 4
 
 bool InMenu = true;
 bool InGame = false;
 bool InDecks = false;
 bool isDeckLoop = false;
+bool ChosingDeck = false;
 Camera2D camera = { 0 };
 
+
+class Card{
+public:
+    std::string name;
+    int Id;
+    std::vector< int > Attacks;
+    std::string fileName;
+    void SetCard(std::string name, int Id, int atk1, int atk2, std::string fileNameFunc){
+        name = name;
+        Id = Id;
+        Attacks.push_back(atk1);
+        Attacks.push_back(atk2);
+        fileName = fileNameFunc;
+    }
+};
+std::vector<Card> AddToDeck;
+std::vector<Card> Cards;
 
 class game{
 public:
@@ -73,47 +93,56 @@ public:
     };
 };
 class deck{
-private:
-    deck Deck[52];
 public:
-    deck SetDeck(std::string name, std::vector<deck> DeckFunc)
-    {
-        for(int i = 0;i<DeckFunc.size(); i++){
-            Deck[i] = DeckFunc[i];
-        }
-        Decks.push_back(Deck);
+    std::string Name;
+    int DeckId;
+    std::vector<Card> deck;
+    void SetDeck(std::string DeckName, std::vector<Card> DeckCards, long double Id){
+        deck = DeckCards;
+        DeckId = Id;
     }
 };
-std::vector<deck> Decks;
+//Setting player inventory !!!
+
+//Create the player deck list. This will be modified when the games has database
+std::vector<deck> PlayerDecks;
+
+
 class deckscreen{
 private:
+    //Create the button rectangles
+    Rectangle FinalizeButton = {500,500,140,40};
     Rectangle CreateButton = {790,60,100,60};
 public:
     void Draw(){
-        DrawText("+", 790,100,50,WHITE);
+        DrawText("+", CreateButton.x,CreateButton.y,50,WHITE);
+        if(ChosingDeck){
+            //Draw text to finalize the deck
+            DrawText("Finalize", 500, 500, 30, GRAY);
+        }
     }
     void Listener(){
         if(CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), CreateButton) && IsMouseButtonPressed(0)){
-            Deck.SetDeck() 
+            ChosingDeck = true;
+        }
+        //Check if button to create deck was pressed
+        if(CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), FinalizeButton) && IsMouseButtonPressed(0)){
+            //Check if deck have the Min_Cards_Quantity
+            if(AddToDeck.size()>MIN_CARDS_IN_DECK){
+                //Create the deck
+                deck thisDeck;
+                //Set the deck info
+                thisDeck.SetDeck("Deck1", AddToDeck, PlayerDecks.size());
+                //Clean the cards will be added in deck
+                AddToDeck.clear();    
+                //Add the deck to player decklist            
+                PlayerDecks.push_back(thisDeck);
+                printf("Deck added to wallet. This is your %ld deck", PlayerDecks.size());
+            }
         }
     }
 
 };
-class Card{
-public:
-    std::string name;
-    int Id;
-    std::vector< int > Attacks;
-    std::string fileName;
-    void SetCard(std::string name, int Id, int atk1, int atk2, std::string fileNameFunc){
-        name = name;
-        Id = Id;
-        Attacks.push_back(atk1);
-        Attacks.push_back(atk2);
-        fileName = fileNameFunc;
-    }
-};
-std::vector<Card> Cards;
 
 class button{
 public:
@@ -122,17 +151,23 @@ public:
     std::vector<Rectangle> Rectangles;
     void Draw(float x, float y){
         Rectangle button={x,y,50,50};
+        if(ChosingDeck){
+            DrawText("+",x,y,50,WHITE);
+        }
         DrawRectangle(x,y,50,50,WHITE);
         Rectangles.push_back(button);
     }
     void Listener(){
         int i = 0;
-        bool cardIsPressed=false;
         //Checking who card is pressed
         if(IsMouseButtonPressed(0)){
             for(i=0;i<Cards.size();i++){
                 if(CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(),camera), Rectangles[i]) && IsMouseButtonPressed(0)){
-                    printf("");
+                    if(ChosingDeck){
+                        AddToDeck.push_back(Cards[i]);
+                        printf("Card Loaded sucessfully: %s\n", Cards[i].fileName.c_str());
+                        printf("Deck cards: %ld\n", AddToDeck.size());
+                    }
                 }
             }
         }
@@ -156,6 +191,9 @@ int main(){
     //Cards
     Card Lion; Lion.SetCard("Lion", 0, 32,32,"card.png"); Cards.push_back(Lion);
     Card raiko; raiko.SetCard("raiko", 1, 230,23,"card2.png"); Cards.push_back(raiko);
+    Card Ave; Ave.SetCard("Ave", 1, 230,23,"card2.png"); Cards.push_back(Ave);
+    Card Mula; Mula.SetCard("Mula", 1, 230,23,"card2.png"); Cards.push_back(Mula);
+    Card Dilma; Dilma.SetCard("Dilma", 1, 230,23,"card2.png"); Cards.push_back(Dilma);
 
     //Classes
     menuPrincipal Menu;
@@ -205,15 +243,22 @@ int main(){
                     }
                 //Drawing Decks Menu cards
                 if(InDecks&&isDeckLoop){
-                    for (int l=0; l<MAX_ROWS;l++){
-                        for(int c=0;c<MAX_COLUMNS;c++){
+                    for (int l=0; l<MAX_CARDS_ROWS;l++){
+                        for(int c=0;c<MAX_CARDS_COLUMNS;c++){
                         DrawTexture(CardList[c],20+l*110,c*130,WHITE);
                         Button.Draw(20+l*110,c*130);
                         }
                     }
                 }
-                
-
+                if(InDecks){
+                    for (int l=0; l<MAX_DECKS_ROWS;l++){
+                        for(int c=0;c<MAX_DECKS_COLUMNS;c++){
+                            for(int i=0; i<PlayerDecks.size();i++){
+                                DrawRectangle(600+l*110,i*130,100,120,WHITE);
+                            }
+                        }
+                    }
+                }
                 ClearBackground(BLACK);
             EndMode2D();
         EndDrawing();
