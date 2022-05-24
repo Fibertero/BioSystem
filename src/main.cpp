@@ -1,28 +1,35 @@
 #include <iostream>
-#include<vector>
+#include <vector>
 
 #ifdef _WIN32
-#include "raylib/src/raylib.h"
+# include "raylib/src/raylib.h"
 #elif __linux__
-#include"raylib.h"
+# include "raylib.h"
 #endif
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 #define WINDOW_TITLE "Development"
+#define DEFAULT_RES_PATH "res/"
+
 #define CARDS_NUMBER 10
 #define MAX_CARDS_ROWS 1
 #define MAX_CARDS_COLUMNS 5
 #define MAX_DECKS_ROWS 1
 #define MAX_DECKS_COLUMNS 6
 #define MIN_CARDS_IN_DECK 4
+
 enum States{
-    MENU,GAME,DECKSCREEN, DECKCREATINGSCREEN
+    MENU,
+    GAME,
+    DECKSCREEN,
+    DECKCREATINGSCREEN,
 };
+
 States gameState = MENU;
 bool isDeckLoop = false;
-bool ChosingDeck = false;
-Camera2D camera = {0};
+bool chosingDeck = false;
+Camera2D camera;
 
 class Card {
 public:
@@ -32,19 +39,21 @@ public:
     int Id;
     Card(std::string name, int Id, int atk1, int atk2, std::string fileNameFunc)
     {
-        name = name;
-        Id = Id;
+        this->name = name;
+        this->Id = Id;
         Attacks.push_back(atk1);
         Attacks.push_back(atk2);
-        fileName = fileNameFunc;
+        fileName = DEFAULT_RES_PATH + fileNameFunc;
     }
 };
+
 std::vector<Card> AddToDeck;
 std::vector<Card> Cards;
 
 class game {
 public:
-    void Draw() {
+    void Draw()
+    {
         DrawText("In Game", 300, 300, 33, WHITE);
     }
 };
@@ -64,7 +73,7 @@ public:
     void SetYTarget(float element) { target.y = element; }
     void SetRotation(float element) { rotation = element; }
     void SetZoom(float element) { zoom = element; }
-    
+
     void AddX(float element) { target.x += element;};
     void RemoveX(float element) { target.x -= element;};
     void AddY(float element) { target.y += element;};
@@ -72,6 +81,7 @@ public:
     void AddZoom(float element){zoom += element;};
     void RemoveZoom(float element){zoom -= element;};
 };
+
 class menuPrincipal {
 private:
     Rectangle play = {10, 5, 120, 50};
@@ -89,30 +99,29 @@ public:
         DrawText("Otro", 287, 40, 30,BLACK);
 
     }
-    /*Listening to menu*/
+    /* Listening to menu */
     void Listener()
     {
-            /*Check if "Deck" button was pressed*/
+            /* Check if "Deck" button was pressed */
             if (CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), Decks)
-            && IsMouseButtonPressed(0)) {  
-                /*Set the gameState DeckScreen*/
+            && IsMouseButtonPressed(0)) {
+                /* Set the gameState DeckScreen */
                 gameState = DECKSCREEN;
-                isDeckLoop=true;
+                isDeckLoop = true;
             }
-            /*Check if "Play" button was pressed*/
+            /* Check if "Play" button was pressed */
             if (CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), play)
             && IsMouseButtonPressed(0)) {
-                /*Set the gameState Game*/
+                /* Set the gameState Game */
                 gameState = GAME;
             }
     };
 };
 
 class CreatingDeckMenu{
-private:
-    
 public:
-    void Draw(){
+    void Draw()
+    {
         DrawLine(0, 100, 1800, 100, WHITE);
         DrawLine(300, 100, 300, 1800, WHITE);
     }
@@ -123,9 +132,11 @@ public:
     std::string Name;
     std::vector<Card> deck;
     int DeckId;
-    void SetDeck(std::string DeckName, std::vector<Card> DeckCards, int Id){
+    void SetDeck(std::string DeckName, std::vector<Card> DeckCards, int Id)
+    {
+        (void) DeckName; /* Disable warning */
         deck = DeckCards;
-        DeckId = Id;
+        this->DeckId = Id;
     }
 };
 
@@ -150,7 +161,7 @@ public:
         CreateButton.x = 1500;
         DrawText("-", CreateButton.x, CreateButton.y, 90, WHITE);
         }
-        if (ChosingDeck && gameState == DECKSCREEN) {
+        if (chosingDeck && gameState == DECKSCREEN) {
             /* Draw text to finalize the deck */
             DrawText("Finalize", 500, 500, 30, GRAY);
         }
@@ -159,17 +170,19 @@ public:
     {
         if (CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), CreateButton)
         && IsMouseButtonPressed(0)) {
-            if(ChosingDeck){
-                ChosingDeck=false;
+            if (chosingDeck) {
+                chosingDeck = false;
             }
-            ChosingDeck = true;
-            switch(gameState){
-                case DECKSCREEN:
+            chosingDeck = true;
+            switch(gameState) {
+            case DECKSCREEN:
                 gameState=DECKCREATINGSCREEN;
                 break;
-                case DECKCREATINGSCREEN:
+            case DECKCREATINGSCREEN:
                 AddToDeck.clear();
-                gameState=DECKSCREEN;
+                gameState = DECKSCREEN;
+                break;
+            default:
                 break;
             }
         }
@@ -200,7 +213,7 @@ public:
     std::vector<Rectangle> Rectangles;
     void Draw(float x, float y){
         Rectangle button = {x, y, 50, 50};
-        if (ChosingDeck) {
+        if (chosingDeck) {
             DrawText("+",x, y, 50, WHITE);
         }
         DrawRectangle(x, y, 50, 50, WHITE);
@@ -212,7 +225,7 @@ public:
             for (size_t i = 0; i < Cards.size(); ++i) {
                 if (CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), Rectangles[i])
                 && IsMouseButtonPressed(0)) {
-                    if (ChosingDeck) {
+                    if (chosingDeck) {
                         AddToDeck.push_back(Cards[i]);
                         printf("Card Loaded sucessfully: %s\n", Cards[i].fileName.c_str());
                         printf("Deck cards: %ld\n", AddToDeck.size());
@@ -233,7 +246,7 @@ int main(void) {
     Camera.SetYTarget(20.0f);
     Camera.SetRotation(0.0f);
     Camera.SetZoom(1.0f);
-    camera.target = (Vector2) {Camera.GetXTarget(), Camera.GetYTarget()};
+    camera.target = Vector2 {Camera.GetXTarget(), Camera.GetYTarget()};
     camera.rotation = Camera.GetRotation();
 
     /* Cards */
@@ -278,37 +291,35 @@ int main(void) {
 
                 /* Decks listener */
                 /* Updating Camera */
-                camera.target = (Vector2) {Camera.GetXTarget(), Camera.GetYTarget()};
+                camera.target = Vector2 {Camera.GetXTarget(), Camera.GetYTarget()};
                 Camera.AddY(GetMouseWheelMove() * 100);
                 camera.zoom = Camera.GetZoom();
 
 
                 switch(gameState){
-                    case DECKCREATINGSCREEN:
-                        CDM.Draw();
-                        Camera.SetZoom(0.5);
-                    case DECKSCREEN: 
-                    DeckScreen.Draw(); 
-                    Button.Listener(); 
+                case DECKCREATINGSCREEN:
+                    CDM.Draw();
+                    Camera.SetZoom(0.5);
+                    break;
+                case DECKSCREEN:
+                    DeckScreen.Draw();
+                    Button.Listener();
                     DeckScreen.Listener();
                     Camera.SetZoom(1.0);
                     break;
-
-                    case MENU: 
-                    DrawTexture(BackScreen, 0, 0, WHITE); 
-                    Menu.Draw(); 
+                case MENU:
+                    DrawTexture(BackScreen, 0, 0, WHITE);
+                    Menu.Draw();
                     Menu.Listener();
                     Camera.SetZoom(1.0);
                     break;
-                
-                    case GAME: 
-                    Game.Draw(); 
+                case GAME:
+                    Game.Draw();
                     Camera.SetZoom(1.0);
                     break;
-
-                    default:
-                        printf("Unable to get current state");
-                        break;
+                default:
+                    printf("Unable to get current state");
+                    break;
                 }
 
                 /* Drawing Decks Menu cards */
