@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/BioSystem.dir/src/main.cpp.o  -o bin/BioSystem  -Wl,-rpath,/usr/local/lib /usr/local/lib/libraylib.so -lm -L/usr/local/lib -lraylib 

@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/guile/BioSystem/src/main.cpp
+iostream
+-
+vector
+-
+raylib/src/raylib.h
+/home/guile/BioSystem/src/raylib/src/raylib.h
+raylib.h
+/home/guile/BioSystem/src/raylib.h
+

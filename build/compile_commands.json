@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/guile/BioSystem/build",
+  "command": "/usr/bin/c++  -DGAME_DEBUG=1 -I/home/guile/BioSystem/include  -g   -Wall -Wextra -Wpedantic -Werror -I/usr/local/include -std=gnu++2a -o CMakeFiles/BioSystem.dir/src/main.cpp.o -c /home/guile/BioSystem/src/main.cpp",
+  "file": "/home/guile/BioSystem/src/main.cpp"
+}
+]
