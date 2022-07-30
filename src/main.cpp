@@ -25,6 +25,8 @@
 #define MAX_DECKS_COLUMNS 6
 #define MIN_CARDS_IN_DECK 4
 
+std::vector<Card> Cards = DefineCards();
+
 enum States{
     MENU,
     GAME,
@@ -35,8 +37,6 @@ enum States{
 States gameState = MENU;
 bool isDeckLoop = false;
 bool chosingDeck = false;
-
-std::vector<Card> Cards = DefineCards();
 
 class game {
 public:
@@ -170,11 +170,10 @@ public:
     Rectangle button;
     std::vector<Rectangle> Rectangles;
     void Draw(float x, float y){
-        Rectangle button = {x, y, 50, 50};
+        Rectangle button = {x, y, 150, 200};
         if (chosingDeck) {
             DrawText("+",x, y, 50, WHITE);
         }
-        DrawRectangle(x, y, 50, 50, WHITE);
         Rectangles.push_back(button);
     }
     void Listener(){
@@ -184,7 +183,7 @@ public:
                 if (CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), Rectangles[i])
                 && IsMouseButtonPressed(0)) 
                 {
-                    printf("\n\n%d\n\n", Cards[i].Id);
+                    printf("\n\n%s\n\n", Cards[i].name.c_str());
             }
         }
     }
@@ -208,18 +207,8 @@ int main(void) {
     camera.target = Vector2 {Camera.GetXTarget(), Camera.GetYTarget()};
     camera.rotation = Camera.GetRotation();
 
-    /* Texture Declaration*/
-    std::vector<Texture2D> CardList;
-    for (size_t i = 0; i < Cards.size(); ++i) {
-        Image thisCarde = LoadImage(Cards[i].fileName.c_str());
-        ImageResize(&thisCarde, 150, 150);
-        Texture2D thisCard = LoadTextureFromImage(thisCarde);
-        CardList.push_back(thisCard);
-        printf("[ CardList ] - Loading Cards \n%ld/%ld \nwith file %s\n", i,
-        Cards.size(),
-        Cards[i].fileName.c_str());
-        UnloadImage(thisCarde);
-    }
+    auto CardList = TexLoader(Cards);
+
     bool inLoop = true;
 
 
@@ -232,8 +221,6 @@ int main(void) {
         BeginDrawing();
             BeginMode2D(camera);
                 DrawFPS(600,40);
-
-                /* Decks listener */
                 /* Updating Camera */
                 camera.target = Vector2 {Camera.GetXTarget(), Camera.GetYTarget()};
                 Camera.AddY(GetMouseWheelMove() * 100);
@@ -282,18 +269,24 @@ int main(void) {
                 /* Drawing Decks Menu cards */
                 if (gameState == DECKSCREEN) {
                     if (isDeckLoop) {
-                        for(int i = 0; i<Cards.size(); ++i){
-                            for (size_t l = 0; l < MAX_CARDS_ROWS; ++l) {
-                                for (size_t c = 0; c < MAX_CARDS_COLUMNS; ++c) {
+                        for(int i = 0; i<Cards.size(); ++i)
+                        {
+                            for (size_t l = 0; l < MAX_CARDS_ROWS; ++l) 
+                            {
+                                for (size_t c = 0; c < MAX_CARDS_COLUMNS; ++c) 
+                                {
                                     DrawTexture(CardList[i], 20 + l * 110,c * 130, WHITE);
                                     Button.Draw(20 + l * 110, c * 130);
                             }
                         }
                     }
                 } else {
-                        for (size_t l = 0; l < MAX_DECKS_ROWS; ++l) {
-                            for (size_t c = 0; c < MAX_DECKS_COLUMNS; ++c) {
-                                for (size_t i = 0; i < PlayerDecks.size(); ++i) {
+                        for (size_t l = 0; l < MAX_DECKS_ROWS; ++l) 
+                        {
+                            for (size_t c = 0; c < MAX_DECKS_COLUMNS; ++c) 
+                            {
+                                for (size_t i = 0; i < PlayerDecks.size(); ++i) 
+                                {
                                     DrawRectangle(600 + l * 110, i * 130, 100, 120, WHITE);
                                 }
                             }

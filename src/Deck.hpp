@@ -14,7 +14,9 @@ public:
     Deck() = default;
     Deck(std::string _Name, std::vector<Card> _Cards, int _Id)
         :Name(_Name), Cards(_Cards), Id(_Id){}
-    Card GetCardByIndex(int index){
+    
+    Card GetCardByIndex(int index)
+    {
         return Cards[index];
     }
 };

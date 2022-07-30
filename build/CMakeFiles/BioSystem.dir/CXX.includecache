@@ -6,13 +6,43 @@
 
 #IncludeRegexTransform: 
 
-/home/guile/BioSystem/src/main.cpp
+/home/guile/Jogos/BioSystem/src/Camera.hpp
+iostream
+-
+iostream
+-
+raylib.h
+/home/guile/Jogos/BioSystem/src/raylib.h
+
+/home/guile/Jogos/BioSystem/src/Cards.hpp
 iostream
 -
 vector
 -
-raylib/src/raylib.h
-/home/guile/BioSystem/src/raylib/src/raylib.h
+
+/home/guile/Jogos/BioSystem/src/Deck.hpp
+iostream
+-
 raylib.h
-/home/guile/BioSystem/src/raylib.h
+/home/guile/Jogos/BioSystem/src/raylib.h
+Cards.hpp
+/home/guile/Jogos/BioSystem/src/Cards.hpp
+vector
+-
+
+/home/guile/Jogos/BioSystem/src/main.cpp
+iostream
+-
+vector
+-
+Cards.hpp
+/home/guile/Jogos/BioSystem/src/Cards.hpp
+Camera.hpp
+/home/guile/Jogos/BioSystem/src/Camera.hpp
+Deck.hpp
+/home/guile/Jogos/BioSystem/src/Deck.hpp
+raylib/src/raylib.h
+/home/guile/Jogos/BioSystem/src/raylib/src/raylib.h
+raylib.h
+/home/guile/Jogos/BioSystem/src/raylib.h
 

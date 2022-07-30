@@ -6,5 +6,5 @@ CXX_FLAGS = -g   -Wall -Wextra -Wpedantic -Werror -I/usr/local/include -std=gnu+
 
 CXX_DEFINES = -DGAME_DEBUG=1
 
-CXX_INCLUDES = -I/home/guile/BioSystem/include 
+CXX_INCLUDES = -I/home/guile/Jogos/BioSystem/include 
 

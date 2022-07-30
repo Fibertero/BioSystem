@@ -44,10 +44,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/guile/BioSystem
+CMAKE_SOURCE_DIR = /home/guile/Jogos/BioSystem
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/guile/BioSystem/build
+CMAKE_BINARY_DIR = /home/guile/Jogos/BioSystem/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -74,14 +74,14 @@ clean: CMakeFiles/BioSystem.dir/clean
 CMakeFiles/BioSystem.dir/all:
 	$(MAKE) -f CMakeFiles/BioSystem.dir/build.make CMakeFiles/BioSystem.dir/depend
 	$(MAKE) -f CMakeFiles/BioSystem.dir/build.make CMakeFiles/BioSystem.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/guile/BioSystem/build/CMakeFiles --progress-num=1,2 "Built target BioSystem"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/guile/Jogos/BioSystem/build/CMakeFiles --progress-num=1,2 "Built target BioSystem"
 .PHONY : CMakeFiles/BioSystem.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/BioSystem.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/guile/BioSystem/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/guile/Jogos/BioSystem/build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/BioSystem.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/guile/BioSystem/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/guile/Jogos/BioSystem/build/CMakeFiles 0
 .PHONY : CMakeFiles/BioSystem.dir/rule
 
 # Convenience name for target.

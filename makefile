@@ -1,6 +1,6 @@
 COMP=g++
 
-SRC=src/main.cpp src/Camera.hpp
+SRC=src/main.cpp src/Cards.cpp
 
 FLAG=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
