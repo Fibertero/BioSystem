@@ -1,6 +1,6 @@
 include_guard()
 
-option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors." ON)
+option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors." OFF)
 
 include(cmake/compilers.cmake)
 
