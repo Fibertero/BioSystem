@@ -13,8 +13,10 @@ target_sources(
 	PRIVATE
 	# Sources
 		src/main.cpp
+		src/Cards.cpp
 	# Headers
-		# Put headers here
+		src/Cards.hpp
+		src/Deck.hpp
 )
 
 target_compile_features(
